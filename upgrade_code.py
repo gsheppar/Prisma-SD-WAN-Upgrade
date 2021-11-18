@@ -106,7 +106,7 @@ def download(cgx, lists_from_csv, image):
     ########## Start upgrade ##########
     
     if len(element_list) != 0:
-        print("\nStarting to initiate downloads")
+        print("\nStarting to initiate upgrades")
         for element_id in element_list:
             resp = cgx.get.software_state(element_id=element_id).cgx_content
             data = {"_etag":resp['_etag'],"_schema":resp['_schema'],"image_id":image_upgrade,"scheduled_upgrade":None,"scheduled_download":None,"download_interval":None,"upgrade_interval":None,"interface_ids":None}
