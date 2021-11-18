@@ -8,6 +8,8 @@ The purpose of this script is to pre-stage code to a set of IONs from a CSV file
  
  - ./upgrade_code.py can be used to pre-stage an ION code to a set of devices from a CSV file
  
+ - ./code_check_.py can be used find out all active and downloaded code then export it to a CSV fil code_check.csv
+ 
 
 #### License
 MIT
@@ -36,6 +38,9 @@ MIT
  1. ./upgrade_code.py -F upgrade_list.csv -V 5.5.5-b
       - -F is the CSV file and -V is the ION code
       - Please note if the code has not been pre-staged with the previous script it will have to download the code before upgrading 
+	  
+ - Use the code_check.py to export to a CSV file all IONs active and download image versions 
+ 1. ./code_check.py
  
  
 ### Caveats and known issues:
