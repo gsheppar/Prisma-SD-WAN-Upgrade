@@ -26,16 +26,16 @@ MIT
  
  - Use the get_ions.py to get a list of all the ION element names
  1. ./get_ions.py
-  * Will produce a csv called upgrade_list.csv which you can remove IONs you don't want to be upgraded
+      - Will produce a csv called upgrade_list.csv which you can remove IONs you don't want to be upgraded
  
  - Use the download_code.py to pre-stage code to the IONs elements in the CSV file
  1. ./download_code.py -F upgrade_list.csv -V 5.5.5-b
-  * -F is the CSV file and -V is the ION code
+      - -F is the CSV file and -V is the ION code
 
  - Use the upgrade_code.py to upgrade code to the IONs elements in the CSV file
  1. ./upgrade_code.py -F upgrade_list.csv -V 5.5.5-b
-  * -F is the CSV file and -V is the ION code
-  * Please note if the code has not been pre-staged with the previous script it will have to download the code before upgrading 
+      - -F is the CSV file and -V is the ION code
+      - Please note if the code has not been pre-staged with the previous script it will have to download the code before upgrading 
  
  
 ### Caveats and known issues:
