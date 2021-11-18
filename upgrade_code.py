@@ -122,7 +122,7 @@ def download(cgx, lists_from_csv, image):
     if len(element_list) != 0:
         print("\nStarting to check on upgrade status")
         time_check = 0
-        while time_check < 900:
+        while time_check < 1800:
             check_element_list = element_list
             for element_id in check_element_list:
                 time_stamp = 0
@@ -137,7 +137,7 @@ def download(cgx, lists_from_csv, image):
         
             if len(element_list) == 0:
                 break
-            print("Time elapse: " + str(time_check) + " seconds out of 900:" + str(len(element_list)) + " IONs left")
+            print("Time elapse: " + str(time_check) + " seconds out of 1800 " + str(len(element_list)) + " IONs left")
             time.sleep(10)
             time_check += 10
         if len(element_list) != 0:
