@@ -21,7 +21,7 @@ jdout = cloudgenix.jdout
 TIME_BETWEEN_API_UPDATES = 60       # seconds
 REFRESH_LOGIN_TOKEN_INTERVAL = 7    # hours
 SDK_VERSION = cloudgenix.version
-SCRIPT_NAME = 'CloudGenix: Example script: Upgrade Code'
+SCRIPT_NAME = 'CloudGenix: Example script: Download Code'
 SCRIPT_VERSION = "v1"
 
 # Set NON-SYSLOG logging to use function name
@@ -54,7 +54,7 @@ except ImportError:
     CLOUDGENIX_USER = None
     CLOUDGENIX_PASSWORD = None
 
-def download(cgx, lists_from_csv, image):
+def download(cgx):
     
     image_options = []
     image_id2n = {}
@@ -64,91 +64,59 @@ def download(cgx, lists_from_csv, image):
         image_n2id[images['version']] = images['id']
         image_id2n[images['id']] = images['version']
         
-    ########## Check if image is available ##########
-    
-    if image not in image_options:
-        print("The image: " + image + " is not an option in your tenant")
-        return
-    image_upgrade = image_n2id[image]
     
     ########## Get list of IONs ##########
     
-    print("Getting all IONs and checking if they are online\n")
     element_list = []
     element_id2n = {}
-    for name in lists_from_csv:
-        for elements in cgx.get.elements().cgx_content["items"]:
-            if name == elements["name"]:
-                for machine in cgx.get.machines().cgx_content["items"]:
-                    try:
-                        if machine['em_element_id'] == elements['id']:
-                            if machine["connected"]:
-                                element_list.append(elements["id"])
-                                element_id2n[elements["id"]] = elements["name"]
-                            else:
-                                print(elements["name"] + " is currewntly offline so will not download code")
-                    except:
-                        pass
+    print("Getting all IONs and checking if they are online\n")
+    for elements in cgx.get.elements().cgx_content["items"]:
+        for machine in cgx.get.machines().cgx_content["items"]:
+            try:
+                if machine['em_element_id'] == elements['id']:
+                    if machine["connected"]:
+                        element_list.append(elements["id"])
+                        element_id2n[elements["id"]] = elements["name"]
+            except:
+                pass
 
     ########## Check if image is already downloaded ##########
-
-    check_element_list = element_list
-    for element_id in check_element_list:
+    
+    print("Checking the active image and downloaded image\n")
+    code_check_list = []
+    for element_id in element_list:
+        code_check_data = {}
+        code_check_data["ION_Name"] = element_id2n[element_id]
         time_stamp = 0
         for software in cgx.get.software_status(element_id=element_id).cgx_content["items"]:
             current_timestamp = software.get("_created_on_utc", 0)    
             if current_timestamp >= time_stamp:
                 status = software
                 time_stamp = current_timestamp
-        
-        if image_id2n[status['active_image_id']] == image:
-            print(element_id2n[element_id] + " already has been upgraded to " + image)
-            element_list.remove(element_id)
-                
-                
-    
-    ########## Start upgrade ##########
-    
-    if len(element_list) != 0:
-        print("\nStarting to initiate upgrades")
-        for element_id in element_list:
-            resp = cgx.get.software_state(element_id=element_id).cgx_content
-            data = {"_etag":resp['_etag'],"_schema":resp['_schema'],"image_id":image_upgrade,"scheduled_upgrade":None,"scheduled_download":None,"download_interval":None,"upgrade_interval":None,"interface_ids":None}
-            resp = cgx.put.software_state(element_id=element_id, data=data).cgx_content
-            if not resp:
-                print(str(jdout(resp)))
-                element_list.remove(element_id)
+        if image_id2n[status['upgrade_image_id']]:
+            if status['download_percent'] == 100:
+                code_check_data["Code_Download"] = image_id2n[status['upgrade_image_id']]
             else:
-                print("Upgrading to " + image + " on " + element_id2n[element_id])
-    
-    ########## Track download status ##########
-    
-    if len(element_list) != 0:
-        print("\nStarting to check on upgrade status")
-        time_check = 0
-        while time_check < 1800:
-            check_element_list = element_list
-            for element_id in check_element_list:
-                time_stamp = 0
-                for software in cgx.get.software_status(element_id=element_id).cgx_content["items"]:
-                    current_timestamp = software.get("_created_on_utc", 0)    
-                    if current_timestamp >= time_stamp:
-                        status = software
-                        time_stamp = current_timestamp
-                if status['active_image_id'] == image_upgrade:
-                    print(element_id2n[element_id] + " has finished its upgrade to " + image)
-                    element_list.remove(element_id)
+                code_check_data["Code_Download"] = None
+        else:
+            code_check_data["Code_Download"] = None
         
-            if len(element_list) == 0:
-                break
-            print("Time elapse: " + str(time_check) + " seconds out of 1800 " + str(len(element_list)) + " IONs left")
-            time.sleep(10)
-            time_check += 10
-        if len(element_list) != 0:
-            for element_id in element_list:
-                print("Upgrading " + image + " on " + element_id2n[element_id] + " did not complete in time please check the ION.")
+        code_check_data["Active_Image"] = image_id2n[status['active_image_id']]
+        code_check_list.append(code_check_data)   
     
-    print("\nCode upgrade has been complete on all sites\n")
+    
+    csv_columns = ['ION_Name','Active_Image', 'Code_Download']
+    csv_file = "code_check.csv"
+    try:
+        with open(csv_file, 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+            writer.writeheader()
+            for data in code_check_list:
+                writer.writerow(data)
+            print("Saved code_check.csv file")
+    except IOError:
+        print("CSV Write Failed")
+        
     return    
 
                                           
@@ -177,10 +145,6 @@ def go():
     debug_group = parser.add_argument_group('Debug', 'These options enable debugging output')
     debug_group.add_argument("--debug", "-D", help="Verbose Debug info, levels 0-2", type=int,
                              default=0)
-    
-    config_group = parser.add_argument_group('Config', 'These options change how the configuration is generated.')
-    config_group.add_argument('--file', '-F', help='A CSV file name', required=True)
-    config_group.add_argument('--image', '-V', help='Image', required=True)
     
     args = vars(parser.parse_args())
                              
@@ -240,18 +204,9 @@ def go():
     # create file-system friendly tenant str.
     tenant_str = "".join(x for x in cgx_session.tenant_name if x.isalnum()).lower()
     cgx = cgx_session
-    image = args['image']
-    try:
-        with open(args['file'], "r") as csvfile:
-            csvreader = DictReader(csvfile)
-            lists_from_csv = []
-            for row in csvreader:
-                lists_from_csv.append(row['ION_Name'])
-    except:
-        print("Error importing CSV. Please check column name ION_Name is there")
-        return
     
-    download(cgx, lists_from_csv, image)
+    
+    download(cgx)
     
     # end of script, run logout to clear session.
     cgx_session.get.logout()

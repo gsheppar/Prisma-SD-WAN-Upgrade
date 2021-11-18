@@ -73,18 +73,22 @@ def download(cgx, lists_from_csv, image):
     
     ########## Get list of IONs ##########
     
+    print("Getting all IONs and checking if they are online\n")
     element_list = []
     element_id2n = {}
     for name in lists_from_csv:
         for elements in cgx.get.elements().cgx_content["items"]:
             if name == elements["name"]:
                 for machine in cgx.get.machines().cgx_content["items"]:
-                    if machine['em_element_id'] == elements['id']:
-                        if machine["connected"]:
-                            element_list.append(elements["id"])
-                            element_id2n[elements["id"]] = elements["name"]
-                        else:
-                            print(elements["name"] + " is currewntly offline so will not download code")
+                    try:
+                        if machine['em_element_id'] == elements['id']:
+                            if machine["connected"]:
+                                element_list.append(elements["id"])
+                                element_id2n[elements["id"]] = elements["name"]
+                            else:
+                                print(elements["name"] + " is currewntly offline so will not download code")
+                    except:
+                        pass
 
     ########## Check if image is already downloaded ##########
 
