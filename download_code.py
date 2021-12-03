@@ -100,10 +100,11 @@ def download(cgx, lists_from_csv, image):
             if current_timestamp >= time_stamp:
                 status = software
                 time_stamp = current_timestamp
-        if image_id2n[status['upgrade_image_id']] == image:
-            if status['download_percent'] == 100:
-                print(element_id2n[element_id] + " already has download of " + image)
-                element_list.remove(element_id)
+        if status['upgrade_image_id'] != None:
+            if image_id2n[status['upgrade_image_id']] == image:
+                if status['download_percent'] == 100:
+                    print(element_id2n[element_id] + " already has download of " + image)
+                    element_list.remove(element_id)
         if image_id2n[status['active_image_id']] == image:
             print(element_id2n[element_id] + " already has been upgraded to " + image)
             element_list.remove(element_id)
