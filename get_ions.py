@@ -65,7 +65,10 @@ def get(cgx):
     for elements in cgx.get.elements().cgx_content['items']:
         ion_data = {}
         ion_data['ION_Name'] = elements['name']
-        ion_data['Site_Name'] = site_id2n[elements['site_id']]
+        try:
+            ion_data['Site_Name'] = site_id2n[elements['site_id']]
+        except:
+            ion_data['Site_Name'] = None
         ion_data['Model_Name'] = elements['model_name']
         
         ion_list.append(ion_data)
