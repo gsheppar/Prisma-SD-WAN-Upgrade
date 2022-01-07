@@ -78,7 +78,7 @@ def download(cgx):
                         element_list.append(elements["id"])
                         element_id2n[elements["id"]] = elements["name"]
             except:
-                pass
+                pass                
 
     ########## Check if image is already downloaded ##########
     
@@ -93,15 +93,21 @@ def download(cgx):
             if current_timestamp >= time_stamp:
                 status = software
                 time_stamp = current_timestamp
-        if image_id2n[status['upgrade_image_id']]:
-            if status['download_percent'] == 100:
-                code_check_data["Code_Download"] = image_id2n[status['upgrade_image_id']]
+        try:
+            if image_id2n[status['upgrade_image_id']]:
+                if status['download_percent'] == 100:
+                    code_check_data["Code_Download"] = image_id2n[status['upgrade_image_id']]
+                else:
+                    code_check_data["Code_Download"] = None
             else:
                 code_check_data["Code_Download"] = None
-        else:
+        except:
             code_check_data["Code_Download"] = None
         
-        code_check_data["Active_Image"] = image_id2n[status['active_image_id']]
+        try:
+            code_check_data["Active_Image"] = image_id2n[status['active_image_id']]
+        except:
+            code_check_data["Active_Image"] = "Unknown"
         code_check_list.append(code_check_data)   
     
     
