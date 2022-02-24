@@ -86,11 +86,11 @@ def download(cgx, lists_from_csv, image):
                                 element_list.append(elements["id"])
                                 element_id2n[elements["id"]] = elements["name"]
                             else:
-                                print(elements["name"] + " is currewntly offline so will not download code")
+                                print(elements["name"] + " is currently offline so will not download code")
                     except:
                         pass
 
-    ########## Check if image is already downloaded ##########
+    ########## Check if image is already upgraded ##########
 
     check_element_list = element_list
     for element_id in check_element_list:
@@ -121,7 +121,7 @@ def download(cgx, lists_from_csv, image):
             else:
                 print("Upgrading to " + image + " on " + element_id2n[element_id])
     
-    ########## Track download status ##########
+    ########## Track Upgrade status ##########
     
     if len(element_list) != 0:
         print("\nStarting to check on upgrade status")
