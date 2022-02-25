@@ -60,10 +60,12 @@ def download(cgx, lists_from_csv, goal_image_version):
     image_options = []
     image_id2n = {}
     image_n2id = {}
-    for images in cgx.get.element_images().cgx_content["items"]:
-        image_options.append(images['version'])
-        image_n2id[images['version']] = images['id']
-        image_id2n[images['id']] = images['version']
+    for image in cgx.get.element_images().cgx_content["items"]:
+        if image['state'] == "no-support":
+            continue
+        image_options.append(image['version'])
+        image_n2id[image['version']] = image['id']
+        image_id2n[image['id']] = image['version']
         
     ########## Check if image is available ##########
     
@@ -125,6 +127,8 @@ def complete_upgrade(cgx, goal_image_version, element_id_list, element_id2n):
     upgrade_dict = {}
 
     for image in cgx.get.element_images().cgx_content["items"]:
+        if image['state'] == "no-support":
+            continue
         image_version = image['version']
         image_id = image['id']
         images_id2n[image_id] = image_version
