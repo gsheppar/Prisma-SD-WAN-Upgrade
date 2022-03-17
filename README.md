@@ -2,7 +2,9 @@
 The purpose of this script is to pre-stage code to a set of IONs from a CSV file and then upgrade a set of IONs from a CSV file.  
 
 #### Features
- - ./get_ions.py can be used to get all branch IONs. You can then remove any IONs you want before using this to run your download and upgrade scripts
+ - ./get_ions.py can be used to get all IONs. You can then remove any IONs you want before using this to run your download and upgrade scripts
+ 
+ - ./site_health_check.py can be used to do some pre and post checks from your list of IONs
  
  - ./download_code.py can be used to pre-stage an ION code to a set of devices from a CSV file
  
@@ -31,6 +33,10 @@ MIT
  - Use the get_ions.py to get a list of all the ION element names
  1. ./get_ions.py
       - Will produce a csv called upgrade_list.csv which you can remove IONs you don't want to be upgraded
+
+ - Use the site_health_check.py to do some pre and post checks on your list of IONs
+ 1. ./site_health_check.py -F upgrade_list.csv
+      - Will produce a csv called site_health_check.py
  
  - Use the download_code.py to pre-stage code to the IONs elements in the CSV file
  1. ./download_code.py -F upgrade_list.csv -V 5.5.5-b
