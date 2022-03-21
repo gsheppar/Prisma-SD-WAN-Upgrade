@@ -55,7 +55,7 @@ except ImportError:
     CLOUDGENIX_PASSWORD = None
 
 def health_check(cgx, lists_from_csv):
-    
+        
     site_check_list = []
     elem_id2n = {}
     elem_n2id = {}
@@ -193,7 +193,7 @@ def health_check(cgx, lists_from_csv):
                 
             
             
-        site_check_list.append(site_data)
+            site_check_list.append(site_data)
             
     
     csv_columns = []
